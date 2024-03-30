@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AsylumLauncher.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        Height="720"
+        Width="1280"
+        CanResize="False"
+        x:Class="AsylumLauncher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AsylumLauncher">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="30*"/>
+        <ColumnDefinition Width="50*"/>
+        <ColumnDefinition Width="15*"/>
+      </Grid.ColumnDefinitions>
+      
+      <!-- Background Image -->
+      <Image Source="/Assets/asylum_wallpaper2.png" Stretch="Fill"  Grid.ColumnSpan="3"/>
+
+      <!-- Logo -->
+      <Image Source="/Assets/asylum_logo_small.png" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Grid.ColumnSpan="3" Width="250"/>
+
+      <!-- News Title -->
+      <Label Content="News" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0" FontSize="24" FontWeight="Bold" Foreground="White"/>
+
+      <!-- News Area -->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#88000000" Margin="50,100,0,50" Grid.Column="0">
+        <!-- Add your news content here -->
+        <TextBlock Text="No news retrieved" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Foreground="white"/>
+      </StackPanel>
+
+      <!-- Play Button -->
+      <Button Content="Play" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Width="200" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" Grid.ColumnSpan="3" Foreground="white" Click="PlayButton_Click"/>
+    </Grid>
+
+</Window>
