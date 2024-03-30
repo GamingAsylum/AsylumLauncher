@@ -1,8 +1,12 @@
-﻿using System;
+﻿using AsylumLauncher.Models;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +17,13 @@ namespace AsylumLauncher.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private const string DownloadUrl = "TBD";
+
+        public ObservableCollection<News> NewsItems { get; set; }
+
+        public MainWindowViewModel()
+        {
+            NewsItems = GetTestNews();
+        }
 
         public async Task DownloadAndLaunch()
         {
@@ -71,6 +82,23 @@ namespace AsylumLauncher.ViewModels
             startInfo.UseShellExecute = true;
             startInfo.FileName = @"steam://rungameid/107410//-noLauncher -useBE -connect=life.gaming-asylum.com";
             Process.Start(startInfo);
+        }
+
+        private static ObservableCollection<News> GetTestNews()
+        {
+            ObservableCollection<News> result = new ObservableCollection<News>();
+            for (int i = 0; i < 10; i++)
+            {
+                News newNews = new News();
+                newNews.Title = $"Title {i}";
+                newNews.Description = $"description for item {i} \n more description \n more description";
+                newNews.Author = "Mitch";
+                newNews.ReleaseDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-i);
+
+                result.Add(newNews);
+            }
+
+            return result;
         }
     }
 }

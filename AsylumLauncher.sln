@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsylumLauncher", "AsylumLauncher.csproj", "{50810F15-8117-4B2B-90CE-3019C13E48D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsylumLauncher", "AsylumLauncher\AsylumLauncher.csproj", "{50810F15-8117-4B2B-90CE-3019C13E48D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

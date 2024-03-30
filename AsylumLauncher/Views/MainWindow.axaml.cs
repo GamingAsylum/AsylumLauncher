@@ -1,6 +1,8 @@
 using AsylumLauncher.ViewModels;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using System;
 
 namespace AsylumLauncher.Views
@@ -17,6 +19,7 @@ namespace AsylumLauncher.Views
             this.originalWidth = this.Width;
             this.originalHeight = this.Height;
             this.Resized += OnResized;
+
         }
 
         private void OnResized(object sender, EventArgs e)
@@ -36,6 +39,12 @@ namespace AsylumLauncher.Views
             {
                 await viewModel.DownloadAndLaunch();
             }
+        }
+
+        private void SetIcons()
+        {
+            var windowIcon = new WindowIcon("/Assets/asylum_wallpaper3.png");
+            this.Icon = windowIcon;
         }
     }
 }

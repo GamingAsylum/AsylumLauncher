@@ -9,7 +9,7 @@
         CanResize="False"
         x:Class="AsylumLauncher.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/asylum_logo.ico"
         Title="AsylumLauncher">
 
     <Design.DataContext>
@@ -19,7 +19,6 @@
     </Design.DataContext>
 
     <Grid>
-
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="30*"/>
         <ColumnDefinition Width="50*"/>
@@ -36,10 +35,36 @@
       <Label Content="News" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0" FontSize="24" FontWeight="Bold" Foreground="White"/>
 
       <!-- News Area -->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#88000000" Margin="50,100,0,50" Grid.Column="0">
+      <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled" Margin="50,100,0,50">
         <!-- Add your news content here -->
-        <TextBlock Text="No news retrieved" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Foreground="white"/>
-      </StackPanel>
+        <ListBox ItemsSource="{Binding NewsItems}" HorizontalAlignment="Stretch" Background="#80000000">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="75*"/>
+                  <ColumnDefinition Width="25*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="20*"/>
+                  <RowDefinition Height="80*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding Title}" Foreground="White" FontWeight="Bold" Grid.Column="0" Grid.Row="0"/>
+                <TextBlock Text="{Binding Author}" Foreground="White" FontStyle="Italic" Grid.Column="1" Grid.Row="0"/>
+                <TextBlock Text="{Binding Description}" Foreground="White" TextWrapping="Wrap" Grid.Column="0" Grid.Row="1"/>
+                <TextBlock Text="{Binding ReleaseDate}" Foreground="Gray" Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+          <ListBox.Styles>
+            <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+              <Setter Property="Background" Value="#80041A88"/>
+            </Style>
+          </ListBox.Styles>
+        </ListBox>
+      </ScrollViewer>
+
 
       <!-- Play Button -->
       <Button Content="Play" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Width="200" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" Grid.ColumnSpan="3" Foreground="white" Click="PlayButton_Click"/>
