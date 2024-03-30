@@ -17,7 +17,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Project_Path: AsylumLauncher/AsylumLauncher.csproj # Path to your Avalonia UI project
+      Project_Path: AsylumLauncher # Path to your Avalonia UI project
 
     steps:
     - name: Checkout
