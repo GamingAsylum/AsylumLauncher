@@ -12,8 +12,10 @@ namespace AsylumLauncher.Models
 
         public string? Description { get; set; }
 
+        public string? NewsURL { get; set; }
+
         public string? Author { get; set; }
 
-        public DateOnly? ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get ; set; }
     }
 }

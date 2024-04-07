@@ -1,7 +1,16 @@
 ﻿using AsylumLauncher.Models;
+using AsylumLauncher.Utils;
+using Avalonia;
+using Avalonia.OpenGL;
+using Avalonia.Controls;
+using Avalonia.Input;
+using DynamicData;
+using Newtonsoft.Json;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -11,34 +20,71 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AsylumLauncher.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private const string DownloadUrl = "TBD";
+        private const string ApiBaseUrl = "https://api.gaming-asylum.com";
+        private const float LauncherVersion = 0.1f;
+
+        private string LatestMissionFile;
+
 
         public ObservableCollection<News> NewsItems { get; set; }
 
         public MainWindowViewModel()
         {
-            NewsItems = GetTestNews();
+            InitializeAsync();
+
+            // Placeholder news
+            NewsItems =
+            [
+                new News
+                {
+                    Author = "Mitch",
+                    ReleaseDate = new DateTime(2024, 04, 08, 12, 00, 00),
+                    Title = "Coming Soon!",
+                    Description = "Server news will be coming soon in a later update",
+                },
+            ];
         }
 
-        public async Task DownloadAndLaunch()
+        private async void InitializeAsync()
         {
-
-            await DownloadFile(DownloadUrl);
-            LaunchSteamGame();
+            VersionCheck serverVersions = await GetVersionsAsync();
+            LatestMissionFile = serverVersions.CurrentMissionfileVersion;
         }
 
-        private async Task DownloadFile(string url)
+        public async Task Launch()
+        {
+            bool success = false;
+            if (!await CheckLocalVersion(LatestMissionFile))
+            {
+                success = await DownloadLatest();
+            }
+
+            if (success) {
+                LaunchSteamGame();
+            }
+        }
+
+        private async Task<Boolean> CheckLocalVersion(string missionFileToCheck)
+        {
+            string missionFileDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache");
+            string filePath = Path.Combine(missionFileDir, $"{missionFileToCheck}.pbo");
+
+            return File.Exists(filePath);
+        }
+
+        private async Task<bool> DownloadLatest()
         {
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    using (HttpResponseMessage response = await client.GetAsync(url))
+                    using (HttpResponseMessage response = await client.GetAsync(ApiBaseUrl + "/missionfile/latest"))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -55,6 +101,7 @@ namespace AsylumLauncher.ViewModels
                                     using (Stream fileStream = File.Create(destinationPath))
                                     {
                                         await contentStream.CopyToAsync(fileStream);
+                                        return true;
                                     }
                                 }
                             } else
@@ -70,10 +117,11 @@ namespace AsylumLauncher.ViewModels
                     }
                 }
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("oopsie woopsie");
+                Console.WriteLine("Error downloading the mission file" + ex.Message);
             }
+            return false;
         }
 
         private static void LaunchSteamGame()
@@ -84,21 +132,19 @@ namespace AsylumLauncher.ViewModels
             Process.Start(startInfo);
         }
 
-        private static ObservableCollection<News> GetTestNews()
+        private async Task<VersionCheck> GetVersionsAsync()
         {
-            ObservableCollection<News> result = new ObservableCollection<News>();
-            for (int i = 0; i < 10; i++)
+            VersionCheck version = new VersionCheck();
+            try
             {
-                News newNews = new News();
-                newNews.Title = $"Title {i}";
-                newNews.Description = $"description for item {i} \n more description \n more description";
-                newNews.Author = "Mitch";
-                newNews.ReleaseDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-i);
+                HTTPUtils api = new HTTPUtils();
+                version = await api.RetrieveData<VersionCheck>(ApiBaseUrl + "/missionfile/versioncheck");
 
-                result.Add(newNews);
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
-
-            return result;
+            return version;
         }
     }
 }

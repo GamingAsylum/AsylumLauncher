@@ -68,6 +68,9 @@
 
       <!-- Play Button -->
       <Button Content="Play" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Width="200" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" Grid.ColumnSpan="3" Foreground="white" Click="PlayButton_Click"/>
+
+      <!-- Launcher version -->
+      <Label Content="v0.1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="50,50,0,0" FontSize="24" FontWeight="Bold" Foreground="White" Grid.Column="2"/>
     </Grid>
 
 </Window>
