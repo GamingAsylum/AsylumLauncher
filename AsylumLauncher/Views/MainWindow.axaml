@@ -35,8 +35,8 @@
       <!--<Label Content="News" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0" FontSize="24" FontWeight="Bold" Foreground="White"/>-->
 
       <!-- News Area -->
-      <!--<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled" Margin="50,100,0,50">
-        --><!-- Add your news content here --><!--
+      <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled" Margin="50,100,0,50">
+         <!--Add your news content here--> 
         <ListBox ItemsSource="{Binding NewsItems}" HorizontalAlignment="Stretch" Background="#80000000">
           <ListBox.ItemTemplate>
             <DataTemplate>
@@ -44,7 +44,7 @@
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="75*"/>
                   <ColumnDefinition Width="25*"/>
-                </Grid.ColumnDefinitions>d
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                   <RowDefinition Height="20*"/>
                   <RowDefinition Height="80*"/>
@@ -63,11 +63,11 @@
             </Style>
           </ListBox.Styles>
         </ListBox>
-      </ScrollViewer>-->
+      </ScrollViewer>
 
 
       <!-- Play Button -->
-      <Button Content="Play" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Width="200" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" Grid.ColumnSpan="3" Foreground="white" Click="PlayButton_Click"/>
+      <Button Content="{Binding ButtonContent}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Width="300" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" Grid.ColumnSpan="3" Foreground="white" Click="PlayButton_Click"/>
 
       <!-- Launcher version -->
       <!--<Label Content="v0.1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="50,50,0,0" FontSize="24" FontWeight="Bold" Foreground="White" Grid.Column="2"/>-->

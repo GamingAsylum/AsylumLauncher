@@ -16,6 +16,6 @@ namespace AsylumLauncher.Models
 
         public string? Author { get; set; }
 
-        public DateTime? ReleaseDate { get ; set; }
+        public DateOnly? ReleaseDate { get ; set; }
     }
 }

@@ -1,35 +1,27 @@
 ﻿using AsylumLauncher.Models;
 using AsylumLauncher.Utils;
-using Avalonia;
-using Avalonia.OpenGL;
-using Avalonia.Controls;
-using Avalonia.Input;
-using DynamicData;
-using Newtonsoft.Json;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AsylumLauncher.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         private const string ApiBaseUrl = "https://api.gaming-asylum.com";
+        private string _latestMissionFile;
 
-        private string LatestMissionFile;
-
+        private string _buttonContent = "Play";
+        public string ButtonContent
+        {
+            get => _buttonContent;
+            set => this.RaiseAndSetIfChanged(ref _buttonContent, value);
+        }
 
         public ObservableCollection<News> NewsItems { get; set; }
 
@@ -43,10 +35,9 @@ namespace AsylumLauncher.ViewModels
                 new News
                 {
                     Author = "Mitch",
-                    ReleaseDate = new DateTime(2024, 04, 08, 12, 00, 00),
+                    ReleaseDate = new DateOnly(2024, 06, 28),
                     Title = "Coming Soon!",
-                    Description = "Server news will be coming soon in a later update",
-                    NewsURL = "https://www.gaming-asylum.com/forums/index.php?/topic/126353-changelog-wipe-june-28-2024",
+                    Description = "Server news will be coming soon in a later update!",
                 },
             ];
         }
@@ -54,31 +45,54 @@ namespace AsylumLauncher.ViewModels
         private async void InitializeAsync()
         {
             VersionCheck serverVersions = await GetVersionsAsync();
-            LatestMissionFile = serverVersions.CurrentMissionfileVersion;
+            if (serverVersions.CurrentMissionfileVersion != "")
+            {
+                _latestMissionFile = serverVersions.CurrentMissionfileVersion;
+            }
         }
 
         public async Task Launch()
         {
-            bool success = false;
-            if (!await CheckLocalVersion(LatestMissionFile))
+            bool hasLatestMission = CheckLocalVersion(_latestMissionFile);
+            if (!hasLatestMission)
             {
-                success = await DownloadLatest();
+                ButtonContent = "Downloading...";
+                bool success = await DownloadLatest();
+
+                if (success)
+                {
+                    ButtonContent = "Launching...";
+                    await Task.Delay(1000);
+                    LaunchSteamGame();
+                    await Task.Delay(2000);
+                    ButtonContent = "Play";
+                }
             }
 
-            if (success) {
-                LaunchSteamGame();
-            }
+            ButtonContent = "Launching...";
+            LaunchSteamGame();
+            await Task.Delay(2000);
+            ButtonContent = "Play";
         }
 
-        private async Task<Boolean> CheckLocalVersion(string missionFileToCheck)
+        private bool CheckLocalVersion(string missionFileToCheck)
         {
-            string missionFileDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache");
-            string filePath = Path.Combine(missionFileDir, $"{missionFileToCheck}.pbo");
+            try
+            {
+                string missionFileDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache");
+                string filePath = Path.Combine(missionFileDir, $"{missionFileToCheck}.pbo");
 
-            return File.Exists(filePath);
+                return File.Exists(filePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                ButtonContent = "Error";
+                throw;
+            }
         }
 
-        private async Task<bool> DownloadLatest()
+        private static async Task<bool> DownloadLatest()
         {
             try
             {
@@ -104,7 +118,8 @@ namespace AsylumLauncher.ViewModels
                                         return true;
                                     }
                                 }
-                            } else
+                            }
+                            else
                             {
                                 throw new Exception("no file name in content-disposition");
                             }
@@ -112,29 +127,32 @@ namespace AsylumLauncher.ViewModels
                         }
                         else
                         {
-                            Console.WriteLine("Failed to download file. Status code: " + response.StatusCode);
+                            throw new Exception("Failed to download file. Status code: " + response.StatusCode);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error downloading the mission file" + ex.Message);
+                Logger.Log(ex);
             }
             return false;
         }
 
-        private string GetDestinationPath(string fileName)
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache", fileName);
-        }
-
         private static void LaunchSteamGame()
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = true;
-            startInfo.FileName = @"steam://rungameid/107410//-noLauncher -useBE -connect=life.gaming-asylum.com";
-            Process.Start(startInfo);
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.UseShellExecute = true;
+                startInfo.FileName = @"steam://rungameid/107410//-noLauncher -useBE -connect=life.gaming-asylum.com";
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+            }
+            
         }
 
         private async Task<VersionCheck> GetVersionsAsync()
@@ -146,8 +164,9 @@ namespace AsylumLauncher.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return new VersionCheck();
+                Logger.Log(ex);
+                ButtonContent = "Error";
+                throw;
             }
         }
     }
