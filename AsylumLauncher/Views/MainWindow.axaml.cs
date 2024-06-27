@@ -1,9 +1,6 @@
 using AsylumLauncher.ViewModels;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Platform;
-using System;
 
 namespace AsylumLauncher.Views
 {

@@ -152,7 +152,7 @@ namespace AsylumLauncher.ViewModels
             {
                 Logger.Log(ex);
             }
-            
+
         }
 
         private async Task<VersionCheck> GetVersionsAsync()

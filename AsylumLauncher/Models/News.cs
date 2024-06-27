@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsylumLauncher.Models
 {
@@ -16,6 +12,6 @@ namespace AsylumLauncher.Models
 
         public string? Author { get; set; }
 
-        public DateOnly? ReleaseDate { get ; set; }
+        public DateOnly? ReleaseDate { get; set; }
     }
 }
