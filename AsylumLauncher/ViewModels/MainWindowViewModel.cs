@@ -27,7 +27,6 @@ namespace AsylumLauncher.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private const string ApiBaseUrl = "https://api.gaming-asylum.com";
-        private const float LauncherVersion = 0.1f;
 
         private string LatestMissionFile;
 
@@ -47,6 +46,7 @@ namespace AsylumLauncher.ViewModels
                     ReleaseDate = new DateTime(2024, 04, 08, 12, 00, 00),
                     Title = "Coming Soon!",
                     Description = "Server news will be coming soon in a later update",
+                    NewsURL = "https://www.gaming-asylum.com/forums/index.php?/topic/126353-changelog-wipe-june-28-2024",
                 },
             ];
         }
@@ -124,6 +124,11 @@ namespace AsylumLauncher.ViewModels
             return false;
         }
 
+        private string GetDestinationPath(string fileName)
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache", fileName);
+        }
+
         private static void LaunchSteamGame()
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -134,17 +139,16 @@ namespace AsylumLauncher.ViewModels
 
         private async Task<VersionCheck> GetVersionsAsync()
         {
-            VersionCheck version = new VersionCheck();
             try
             {
                 HTTPUtils api = new HTTPUtils();
-                version = await api.RetrieveData<VersionCheck>(ApiBaseUrl + "/missionfile/versioncheck");
-
-            } catch (Exception ex)
+                return await api.RetrieveData<VersionCheck>(ApiBaseUrl + "/missionfile/versioncheck");
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                return new VersionCheck();
             }
-            return version;
         }
     }
 }
