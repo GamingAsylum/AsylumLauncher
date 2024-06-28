@@ -88,7 +88,7 @@ namespace AsylumLauncher.ViewModels
             {
                 Logger.Log(ex);
                 ButtonContent = "Error";
-                throw;
+                return false;
             }
         }
 
@@ -166,7 +166,7 @@ namespace AsylumLauncher.ViewModels
             {
                 Logger.Log(ex);
                 ButtonContent = "Error";
-                throw;
+                return new VersionCheck();
             }
         }
     }
