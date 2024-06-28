@@ -27,15 +27,15 @@ namespace AsylumLauncher.Utils
                     }
                     else
                     {
-                        Console.WriteLine($"Failed to retrieve data from API. Status code: {response.StatusCode}");
+                        throw new Exception($"Failed to retrieve data from API. Status code: {response.StatusCode}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Logger.Log(ex);
+                    throw;
                 }
             }
-            return default;
         }
 
         // Get filename from http response
