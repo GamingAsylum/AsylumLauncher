@@ -5,7 +5,7 @@ namespace AsylumLauncher.Utils
 {
     internal class Logger
     {
-        private static readonly string LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AsylumLauncherLog.txt");
+        private static readonly string LogFilePath = Path.Combine(AppContext.BaseDirectory, "AsylumLauncherLog.txt");
 
         public static void Log(string message)
         {
