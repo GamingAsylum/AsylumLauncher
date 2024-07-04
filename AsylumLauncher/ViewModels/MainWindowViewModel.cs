@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static AsylumLauncher.Views.MainWindow;
 
@@ -16,17 +14,11 @@ namespace AsylumLauncher.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private const string ApiBaseUrl = "https://api.gaming-asylum.com";
+        private const float CurrentLauncherVersion = 0.2f;
+
         private bool _missionFileUpToDate = false;
 
         #region Properties
-        private string _buttonContent = "Play";
-        public string ButtonContent
-        {
-            get => _buttonContent;
-            set => this.RaiseAndSetIfChanged(ref _buttonContent, value);
-        }
-        private bool _buttonActive = false;
-
         private string _popupMessage = "";
         public string PopupMessage
         {
@@ -41,7 +33,7 @@ namespace AsylumLauncher.ViewModels
             set => this.RaiseAndSetIfChanged(ref _consoleText, value);
         }
 
-        private string _launcherVersion = "v0.2";
+        private string _launcherVersion = "";
         public string LauncherVersion
         {
             get => _launcherVersion;
@@ -65,6 +57,11 @@ namespace AsylumLauncher.ViewModels
 
         private async void InitializeAsync()
         {
+            LauncherVersion = $"v{CurrentLauncherVersion}";
+
+            ConsoleText = "Checking for launcher updates...";
+            await CheckForLauncherUpdatesAsync();
+
             ConsoleText = "Checking for news...";
             NewsItems = new ObservableCollection<News>(await GetLatestNewsAsync());
 
@@ -80,13 +77,44 @@ namespace AsylumLauncher.ViewModels
             }
         }
 
+        private async Task CheckForLauncherUpdatesAsync()
+        {
+            try
+            {
+                HTTPUtils api = new HTTPUtils();
+                var LatestLauncherVersion = await api.RetrieveData<AsylumLauncherVersion>(ApiBaseUrl + "/asylumlauncher/versioncheck");
+
+                if (CurrentLauncherVersion <= LatestLauncherVersion.ForceUpdateVersion)
+                {
+                    OpenPopup(LatestLauncherVersion.ForceUpdateMessage ?? "A new launcher version is available. Please download the latest version from the website.", PopupType.Error);
+                }
+                else if (CurrentLauncherVersion <= LatestLauncherVersion.WarningVersion)
+                {
+                    OpenPopup(LatestLauncherVersion.WarningMessage ?? "A new launcher version is available. Please download the latest version from the website.", PopupType.Info);
+                }
+                else if (CurrentLauncherVersion < LatestLauncherVersion.LatestVersion)
+                {
+                    OpenPopup("A new launcher version is available. Please download the latest version from the website.", PopupType.Info);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                ConsoleText = "Failed checking for launcher updates...";
+                OpenPopup("Failed checking for launcher updates.", PopupType.Error);
+            }
+        }
+
         // Launch the game when the play button is clicked
         public async Task Launch()
         {
             if (!_missionFileUpToDate)
             {
                 ConsoleText = "Downloading mission file...";
-                bool success = await DownloadLatest();
+
+                HTTPUtils api = new HTTPUtils();
+                // Download the latest mission file
+                bool success = await api.DownloadFile(ApiBaseUrl + "/missionfile/latest", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache"));
 
                 if (success)
                 {
@@ -124,47 +152,6 @@ namespace AsylumLauncher.ViewModels
             }
         }
 
-        // Download the latest mission file from the backend
-        private static async Task<bool> DownloadLatest()
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    using (HttpResponseMessage response = await client.GetAsync(ApiBaseUrl + "/missionfile/latest"))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string fileName = response.Content.Headers.ContentDisposition.FileName;
-                            // Fuck ContentDisposition, remove all but the filename
-                            fileName = Regex.Replace(fileName, @"[^\w\d._]", "");
-                            string destinationDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Arma 3", "MPMissionsCache");
-                            string destinationPath = Path.Combine(destinationDirectory, fileName);
-
-                            using (Stream contentStream = await response.Content.ReadAsStreamAsync())
-                            {
-                                using (Stream fileStream = File.Create(destinationPath))
-                                {
-                                    await contentStream.CopyToAsync(fileStream);
-                                    return true;
-                                }
-                            }
-
-                        }
-                        else
-                        {
-                            throw new Exception("Failed to download file. Status code: " + response.StatusCode);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-            return false;
-        }
-
         // Launch Arma 3 with the correct parameters
         private async void LaunchSteamGame()
         {
@@ -194,7 +181,7 @@ namespace AsylumLauncher.ViewModels
             try
             {
                 HTTPUtils api = new HTTPUtils();
-                return await api.RetrieveData<List<News>>("http://localhost:5254" + "/news");
+                return await api.RetrieveData<List<News>>(ApiBaseUrl + "/news");
             }
             catch (Exception ex)
             {

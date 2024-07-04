@@ -7,6 +7,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <ApplicationIcon>Assets\asylum_logo.ico</ApplicationIcon>
+    <PublishTrimmed>True</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +18,10 @@
   <ItemGroup>
     <None Remove="Assets\asylum_logo_small.png" />
     <None Remove="Assets\asylum_wallpaper2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\asylum_logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

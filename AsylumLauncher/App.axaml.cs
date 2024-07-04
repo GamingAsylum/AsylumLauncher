@@ -1,4 +1,3 @@
-using AsylumLauncher.ViewModels;
 using AsylumLauncher.Views;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -17,10 +16,7 @@ namespace AsylumLauncher
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();

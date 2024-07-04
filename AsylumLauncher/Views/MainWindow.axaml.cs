@@ -1,24 +1,38 @@
 using AsylumLauncher.Models;
+using AsylumLauncher.Utils;
 using AsylumLauncher.ViewModels;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using System.Diagnostics;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using System;
-using AsylumLauncher.Utils;
-using Avalonia.Input;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace AsylumLauncher.Views
 {
     public partial class MainWindow : Window
     {
 
+        private readonly string[] wallpapers = {
+            "avares://AsylumLauncher/Assets/asylum_wallpaper2.png",
+            "avares://AsylumLauncher/Assets/asylum_wallpaper3.png",
+            "avares://AsylumLauncher/Assets/asylum_wallpaper4.png",
+            "avares://AsylumLauncher/Assets/asylum_wallpaper5.png",
+            "avares://AsylumLauncher/Assets/asylum_wallpaper6.png"
+        };
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+
+            RandomizeWallpaper();
 
             this.FindControl<Border>("Popup")!.IsVisible = false;
+
+            DataContext = new MainWindowViewModel();
 
             // Subscribe to the OpenPopupRequested event
             if (DataContext is MainWindowViewModel viewModel)
@@ -38,15 +52,25 @@ namespace AsylumLauncher.Views
             }
         }
 
-        private async void ListBoxItem_MouseDoubleClick(object sender, TappedEventArgs e)
+        private void ListBoxItem_MouseDoubleClick(object sender, TappedEventArgs e)
         {
-            // Handle double-click event here
             if (sender is Grid grid && grid.DataContext is News item)
             {
                 try
                 {
                     if (item.NewsURL != null)
-                        Process.Start(new ProcessStartInfo(item.NewsURL) { UseShellExecute = true });
+                    {
+                        // Regular expression pattern for a valid HTTP or HTTPS URL
+                        string pattern = @"^(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$";
+                        Regex regex = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+                        // Check if the URL is valid before opening it
+                        if (regex.IsMatch(item.NewsURL))
+                        {
+                            // Launch the URL in the default browser
+                            Process.Start(new ProcessStartInfo(item.NewsURL) { UseShellExecute = true });
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -84,6 +108,15 @@ namespace AsylumLauncher.Views
             {
                 viewModel.PopupMessage = message;
             }
+        }
+
+        private void RandomizeWallpaper()
+        {
+            Random random = new Random();
+            string selectedWallpaper = wallpapers[random.Next(wallpapers.Length)];
+
+            var imageControl = this.FindControl<Image>("WallpaperImage");
+            imageControl.Source = new Bitmap(AssetLoader.Open(new Uri(selectedWallpaper)));
         }
 
         public enum PopupType
