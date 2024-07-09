@@ -17,11 +17,13 @@ namespace AsylumLauncher.Views
     {
 
         private readonly string[] wallpapers = {
+            "avares://AsylumLauncher/Assets/asylum_wallpaper1.png",
             "avares://AsylumLauncher/Assets/asylum_wallpaper2.png",
             "avares://AsylumLauncher/Assets/asylum_wallpaper3.png",
             "avares://AsylumLauncher/Assets/asylum_wallpaper4.png",
             "avares://AsylumLauncher/Assets/asylum_wallpaper5.png",
-            "avares://AsylumLauncher/Assets/asylum_wallpaper6.png"
+            "avares://AsylumLauncher/Assets/asylum_wallpaper6.png",
+            "avares://AsylumLauncher/Assets/asylum_wallpaper7.png",
         };
 
         public MainWindow()
