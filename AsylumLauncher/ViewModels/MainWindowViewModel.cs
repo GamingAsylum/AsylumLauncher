@@ -160,7 +160,7 @@ namespace AsylumLauncher.ViewModels
                 ConsoleText = "Launching game...";
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.UseShellExecute = true;
-                startInfo.FileName = @"steam://rungameid/107410//-noLauncher -useBE -connect=life.gaming-asylum.com";
+                startInfo.FileName = @"steam://rungameid/107410//-noLauncher -useBE -connect=life.gaming-asylum.com -mod=";
                 Process.Start(startInfo);
                 ConsoleText = "Game launched successfully...";
                 await Task.Delay(5000);
